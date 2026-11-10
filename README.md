@@ -70,7 +70,7 @@ Uso direto, sem o gerador de composição: `JwtAuthModule.register(options)` ou 
 
 ## Desenvolvimento
 
-- No workspace, `scripts/link-foundation.mjs` (rodado antes de build, typecheck e testes) liga `node_modules/@devtrack/foundation-api` à pasta irmã `../foundation-api`. Fora do workspace, não faz nada, e a Foundation vem do registry.
+- No workspace, `scripts/link-foundation.mjs` (rodado antes de build, typecheck e testes) liga `node_modules/@devtrack/foundation-api` à pasta irmã `../foundation-api`. Fora do workspace, não faz nada, e a Foundation vem do registry. O lockfile não grava URL de registry (`.npmrc` com `omit-lockfile-registry-resolved=true`); em qualquer ambiente, `npm ci` precisa de `@devtrack:registry` configurado no `.npmrc` do usuário ou do pipeline (ver `docs/publishing.md` da Foundation).
 - `npm run typecheck`, `npm run lint:check`, `npm test` (unitários e e2e), `npm run test:boundaries`.
 - Fronteira: o código só importa `@devtrack/foundation-api/contracts` e `/nest`. O `prepack` roda a verificação de publicação e a de fronteira.
 
