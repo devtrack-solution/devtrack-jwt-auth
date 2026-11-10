@@ -1,98 +1,80 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# @devtrack/jwt-auth
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Módulo oficial JWT Auth da DevTrack Foundation. Implementa as portas `AccessTokenIssuer` e `AccessTokenVerifier` da Foundation sobre `jose@5.10.0` (versão exata; a 6 é ESM-only):
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+- política de algoritmos fechada: EdDSA e ES256;
+- chaves por `kid` com rotação;
+- claims mínimas: `iss`, `aud`, `exp`, `nbf`, sem permissões no token;
+- tolerância de relógio de no máximo 60 s e vida útil máxima validada;
+- configuração verificada no boot.
 
-## Description
+Fornece a capacidade `access-token` major 1. É uma extensão npm: entra na API pelo `api-cli`, nunca por cópia de arquivos.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Instalação
 
-## Project setup
+Pré-requisito: um host com `@devtrack/foundation-api` `^0.1.0` e `@nestjs/common` `^11`. Com o registry configurado no `.npmrc` (`@devtrack:registry=…`, ver `foundation-api/docs/publishing.md`):
 
 ```bash
-$ npm install
+# api-cli do workspace (bin `api-cli` de ../api-cli); --foundation aponta para o host
+api-cli --foundation ./foundation-api install @devtrack/jwt-auth@0.1.0 --registry "$DEVTRACK_REGISTRY"
+api-cli --foundation ./foundation-api setting enable-native native/http-security
 ```
 
-## Compile and run the project
+Os dois comandos regeneram a composição (`npm run compose`) ao final.
 
-```bash
-# development
-$ npm run start
+O `api-cli` valida integridade (sha512 do registry contra o tarball), versão exata, peers contra o host e o descriptor. Depois registra `ext/jwt-auth` no perfil e em `src/composition/extension-sources.ts`. Para proteger rotas, `native/http-security` precisa estar selecionado: `access-token` sozinho não protege nada.
 
-# watch mode
-$ npm run start:dev
+## Configuração
 
-# production mode
-$ npm run start:prod
+A configuração nunca vai no perfil. O host fornece as opções pelo token de host `jwt-auth.options`, declarado no bloco `composition` do descriptor. O módulo gerado expõe esse token como `COMPOSITION_HOST_TOKENS.jwtAuthOptions`, com valor `Symbol.for('foundation.api.v1.host.jwt-auth.options')`:
+
+```ts
+import { generateKeyPairSync } from 'node:crypto';
+import type { JwtAuthOptions } from '@devtrack/jwt-auth';
+import { COMPOSITION_HOST_TOKENS } from './composition/composition.generated';
+
+const { privateKey, publicKey } = generateKeyPairSync('ed25519'); // em produção, do cofre
+const jwtOptions: JwtAuthOptions = {
+  issuer: 'https://auth.example.com',
+  audience: 'my-api',
+  ttlMs: 15 * 60_000,
+  clockToleranceMs: 1_000,
+  algorithms: ['EdDSA'],
+  signingKey: { kid: 'k1', alg: 'EdDSA', key: privateKey },
+  verificationKeys: [{ kid: 'k1', alg: 'EdDSA', key: publicKey }],
+  clock: { now: () => Date.now() },
+};
+
+// num módulo @Global() do host:
+// { provide: COMPOSITION_HOST_TOKENS.jwtAuthOptions, useValue: jwtOptions }
 ```
 
-## Run tests
+Sem o token, o boot falha com a descrição `foundation.api.v1.host.jwt-auth.options`, e a rota nunca abre.
 
-```bash
-# unit tests
-$ npm run test
+Uso direto, sem o gerador de composição: `JwtAuthModule.register(options)` ou `registerAsync({ inject, useFactory })`, com `JWT_AUTH_ISSUER` em `withAuthentication({ ports: { tokens } })` e `JWT_AUTH_VERIFIER` em `withHttpSecurity({ ports: { tokens } })`.
 
-# e2e tests
-$ npm run test:e2e
+## Descriptor
 
-# test coverage
-$ npm run test:cov
+`@devtrack/jwt-auth/descriptor` (`dist/jwt-auth.descriptor.json`) contém só metadata:
+
+```json
+{
+  "id": "ext/jwt-auth",
+  "provides": [{ "id": "access-token", "major": 1 }],
+  "composition": {
+    "hostOptions": { "token": "jwt-auth.options", "type": "JwtAuthOptions" },
+    "capabilityTokens": { "access-token": "JWT_AUTH_VERIFIER" }
+  }
+}
 ```
 
-## Deployment
+## Desenvolvimento
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+- No workspace, `scripts/link-foundation.mjs` (rodado antes de build, typecheck e testes) liga `node_modules/@devtrack/foundation-api` à pasta irmã `../foundation-api`. Fora do workspace, não faz nada, e a Foundation vem do registry.
+- `npm run typecheck`, `npm run lint:check`, `npm test` (unitários e e2e), `npm run test:boundaries`.
+- Fronteira: o código só importa `@devtrack/foundation-api/contracts` e `/nest`. O `prepack` roda a verificação de publicação e a de fronteira.
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+## Limites
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+- Sem RS256 e sem gestão operacional de chaves (rotação, cofre e JWKS publicado ficam com o host).
+- A licença continua `UNLICENSED` até a decisão de publicação pública.

@@ -1,0 +1,11 @@
+{
+  "id": "ext/jwt-auth",
+  "foundationApiMajor": 1,
+  "exportName": "JwtAuthModule",
+  "provides": [{ "id": "access-token", "major": 1 }],
+  "requires": [],
+  "composition": {
+    "hostOptions": { "token": "jwt-auth.options", "type": "JwtAuthOptions" },
+    "capabilityTokens": { "access-token": "JWT_AUTH_VERIFIER" }
+  }
+}
