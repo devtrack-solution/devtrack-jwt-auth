@@ -1,4 +1,4 @@
-# @devtrack/jwt-auth
+# @devtrack-solution/jwt-auth
 
 Módulo oficial JWT Auth da DevTrack Foundation. Implementa as portas `AccessTokenIssuer` e `AccessTokenVerifier` da Foundation sobre `jose@5.10.0` (versão exata; a 6 é ESM-only):
 
@@ -12,11 +12,11 @@ Fornece a capacidade `access-token` major 1. É uma extensão npm: entra na API 
 
 ## Instalação
 
-Pré-requisito: um host com `@devtrack/foundation-api` `^0.1.0` e `@nestjs/common` `^11`. Com o registry configurado no `.npmrc` (`@devtrack:registry=…`, ver `foundation-api/docs/publishing.md`):
+Pré-requisito: um host com `@devtrack-solution/foundation-api` `^0.1.0` e `@nestjs/common` `^11`. Com o registry configurado no `.npmrc` (`@devtrack-solution:registry=…`, ver `foundation-api/docs/publishing.md`):
 
 ```bash
 # api-cli do workspace (bin `api-cli` de ../api-cli); --foundation aponta para o host
-api-cli --foundation ./foundation-api install @devtrack/jwt-auth@0.1.0 --registry "$DEVTRACK_REGISTRY"
+api-cli --foundation ./foundation-api install @devtrack-solution/jwt-auth@0.1.0 --registry "$DEVTRACK_REGISTRY"
 api-cli --foundation ./foundation-api setting enable-native native/http-security
 ```
 
@@ -30,7 +30,7 @@ A configuração nunca vai no perfil. O host fornece as opções pelo token de h
 
 ```ts
 import { generateKeyPairSync } from 'node:crypto';
-import type { JwtAuthOptions } from '@devtrack/jwt-auth';
+import type { JwtAuthOptions } from '@devtrack-solution/jwt-auth';
 import { COMPOSITION_HOST_TOKENS } from './composition/composition.generated';
 
 const { privateKey, publicKey } = generateKeyPairSync('ed25519'); // em produção, do cofre
@@ -55,7 +55,7 @@ Uso direto, sem o gerador de composição: `JwtAuthModule.register(options)` ou 
 
 ## Descriptor
 
-`@devtrack/jwt-auth/descriptor` (`dist/jwt-auth.descriptor.json`) contém só metadata:
+`@devtrack-solution/jwt-auth/descriptor` (`dist/jwt-auth.descriptor.json`) contém só metadata:
 
 ```json
 {
@@ -70,9 +70,9 @@ Uso direto, sem o gerador de composição: `JwtAuthModule.register(options)` ou 
 
 ## Desenvolvimento
 
-- No workspace, `scripts/link-foundation.mjs` (rodado antes de build, typecheck e testes) liga `node_modules/@devtrack/foundation-api` à pasta irmã `../foundation-api`. Fora do workspace, não faz nada, e a Foundation vem do registry. O lockfile não grava URL de registry (`.npmrc` com `omit-lockfile-registry-resolved=true`); em qualquer ambiente, `npm ci` precisa de `@devtrack:registry` configurado no `.npmrc` do usuário ou do pipeline (ver `docs/publishing.md` da Foundation).
+- No workspace, `scripts/link-foundation.mjs` (rodado antes de build, typecheck e testes) liga `node_modules/@devtrack-solution/foundation-api` à pasta irmã `../foundation-api`. Fora do workspace, não faz nada, e a Foundation vem do registry. O lockfile não grava URL de registry (`.npmrc` com `omit-lockfile-registry-resolved=true`); em qualquer ambiente, `npm ci` precisa de `@devtrack-solution:registry` configurado no `.npmrc` do usuário ou do pipeline (ver `docs/publishing.md` da Foundation).
 - `npm run typecheck`, `npm run lint:check`, `npm test` (unitários e e2e), `npm run test:boundaries`.
-- Fronteira: o código só importa `@devtrack/foundation-api/contracts` e `/nest`. O `prepack` roda a verificação de publicação e a de fronteira.
+- Fronteira: o código só importa `@devtrack-solution/foundation-api/contracts` e `/nest`. O `prepack` roda a verificação de publicação e a de fronteira.
 - CI: `azure-pipelines.yml` roda a qualidade do pacote e a conformidade contra a Foundation publicada (checkout do `devtrack-foundation-core` na tag do peer e `npm run conformance:published`). Conformidade `failed` ou `incomplete` bloqueia a publicação, que só acontece em tag `v<versão>`. Variáveis e detalhes: `docs/publishing.md` da Foundation, seção "Pipelines".
 
 ## Limites

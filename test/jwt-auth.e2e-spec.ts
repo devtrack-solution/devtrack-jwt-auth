@@ -18,9 +18,9 @@ import {
   AuthenticationGuard,
   FoundationCoreModule,
   RequirePermissions,
-} from '@devtrack/foundation-api/nest';
-import { AUTHENTICATION_SERVICE } from '@devtrack/foundation-api/contracts';
-import type { AuthenticationService } from '@devtrack/foundation-api/contracts';
+} from '@devtrack-solution/foundation-api/nest';
+import { AUTHENTICATION_SERVICE } from '@devtrack-solution/foundation-api/contracts';
+import type { AuthenticationService } from '@devtrack-solution/foundation-api/contracts';
 import { JWT_AUTH_ISSUER, JWT_AUTH_VERIFIER, JwtAuthModule } from '../src';
 import type { JwtAuthOptions } from '../src';
 

@@ -3,8 +3,8 @@
 import type {
   AccessTokenIssuer,
   AccessTokenVerifier,
-} from '@devtrack/foundation-api/contracts';
-import { JwtAccessTokenAdapter, type JwtAuthOptions } from '@devtrack/jwt-auth';
+} from '@devtrack-solution/foundation-api/contracts';
+import { JwtAccessTokenAdapter, type JwtAuthOptions } from '@devtrack-solution/jwt-auth';
 
 declare const options: JwtAuthOptions;
 

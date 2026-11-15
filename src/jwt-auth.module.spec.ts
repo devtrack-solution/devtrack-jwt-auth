@@ -4,19 +4,19 @@ import { generateKeyPairSync } from 'node:crypto';
 import { Module } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { decodeJwt } from 'jose';
-import { AuthenticationService } from '@devtrack/foundation-api/contracts';
-import { FoundationCoreModule } from '@devtrack/foundation-api/nest';
-import { AUTHENTICATION_SERVICE } from '@devtrack/foundation-api/contracts';
+import { AuthenticationService } from '@devtrack-solution/foundation-api/contracts';
+import { FoundationCoreModule } from '@devtrack-solution/foundation-api/nest';
+import { AUTHENTICATION_SERVICE } from '@devtrack-solution/foundation-api/contracts';
 import type {
   AuthenticationSessions,
   IdentityAccessResolver,
   PasswordCredentialsVerifier,
-} from '@devtrack/foundation-api/contracts';
+} from '@devtrack-solution/foundation-api/contracts';
 import type {
   AuthenticationMethod,
   Principal,
-} from '@devtrack/foundation-api/contracts';
-import type { SessionReference } from '@devtrack/foundation-api/contracts';
+} from '@devtrack-solution/foundation-api/contracts';
+import type { SessionReference } from '@devtrack-solution/foundation-api/contracts';
 import { JwtAccessTokenAdapter } from './jwt-auth.adapter';
 import {
   JWT_AUTH_ISSUER,

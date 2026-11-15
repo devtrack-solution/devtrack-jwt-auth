@@ -10,12 +10,12 @@ import type {
   AccessTokenIssuer,
   AccessTokenVerifier,
   IssuedAccessToken,
-} from '@devtrack/foundation-api/contracts';
+} from '@devtrack-solution/foundation-api/contracts';
 import type {
   AuthenticationMethod,
   Principal,
-} from '@devtrack/foundation-api/contracts';
-import type { SessionReference } from '@devtrack/foundation-api/contracts';
+} from '@devtrack-solution/foundation-api/contracts';
+import type { SessionReference } from '@devtrack-solution/foundation-api/contracts';
 import {
   JWT_AUTH_MAX_TOKEN_LENGTH,
   resolveJwtAuthOptions,

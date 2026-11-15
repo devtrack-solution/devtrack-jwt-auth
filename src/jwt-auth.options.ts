@@ -4,7 +4,7 @@ import {
   KeyObject,
   type JsonWebKey,
 } from 'node:crypto';
-import type { Clock } from '@devtrack/foundation-api/contracts';
+import type { Clock } from '@devtrack-solution/foundation-api/contracts';
 
 /** Algoritmos assimétricos suportados. Qualquer outro é rejeitado na configuração. */
 export const JWT_AUTH_ALGORITHMS = ['EdDSA', 'ES256'] as const;

@@ -5,7 +5,7 @@ require('reflect-metadata');
 const { generateKeyPairSync } = require('node:crypto');
 const { Module } = require('@nestjs/common');
 const { NestFactory } = require('@nestjs/core');
-const { JWT_AUTH_ISSUER, JWT_AUTH_VERIFIER, JwtAuthModule } = require('@devtrack/jwt-auth');
+const { JWT_AUTH_ISSUER, JWT_AUTH_VERIFIER, JwtAuthModule } = require('@devtrack-solution/jwt-auth');
 
 async function main() {
   const { privateKey, publicKey } = generateKeyPairSync('ed25519');

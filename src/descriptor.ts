@@ -1,4 +1,4 @@
-import type { ModuleDescriptor } from '@devtrack/foundation-api/contracts';
+import type { ModuleDescriptor } from '@devtrack-solution/foundation-api/contracts';
 import descriptorFile from './jwt-auth.descriptor.json';
 
 /**
@@ -14,7 +14,7 @@ export const jwtAuthModuleDescriptor: ModuleDescriptor = {
   foundationApiMajor: 1,
   origin: {
     kind: 'npm',
-    packageName: '@devtrack/jwt-auth',
+    packageName: '@devtrack-solution/jwt-auth',
     version: '0.1.0',
     integrity: 'sha512-PENDING-PUBLISH',
   },

@@ -6,7 +6,7 @@ import {
   JwtAuthModule,
   jwtAuthModuleDescriptor,
   type JwtAuthOptions,
-} from '@devtrack/jwt-auth';
+} from '@devtrack-solution/jwt-auth';
 
 declare const options: JwtAuthOptions;
 
