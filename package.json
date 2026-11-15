@@ -2,7 +2,7 @@
   "name": "@devtrack/jwt-auth",
   "version": "0.1.0",
   "description": "Módulo oficial JWT Auth da DevTrack Foundation: emissão e verificação de access tokens EdDSA/ES256 com rotação por kid.",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
