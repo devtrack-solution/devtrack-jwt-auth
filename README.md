@@ -73,7 +73,7 @@ Uso direto, sem o gerador de composição: `JwtAuthModule.register(options)` ou 
 - No workspace, `scripts/link-foundation.mjs` (rodado antes de build, typecheck e testes) liga `node_modules/@devtrack-solution/foundation-api` à pasta irmã `../foundation-api`. Fora do workspace, não faz nada, e a Foundation vem do registry. O lockfile não grava URL de registry (`.npmrc` com `omit-lockfile-registry-resolved=true`); em qualquer ambiente, `npm ci` precisa de `@devtrack-solution:registry` configurado no `.npmrc` do usuário ou do pipeline (ver `docs/publishing.md` da Foundation).
 - `npm run typecheck`, `npm run lint:check`, `npm test` (unitários e e2e), `npm run test:boundaries`.
 - Fronteira: o código só importa `@devtrack-solution/foundation-api/contracts` e `/nest`. O `prepack` roda a verificação de publicação e a de fronteira.
-- CI: `azure-pipelines.yml` roda a qualidade do pacote e a conformidade contra a Foundation publicada (checkout do `devtrack-foundation-core` na tag do peer e `npm run conformance:published`). Conformidade `failed` ou `incomplete` bloqueia a publicação, que só acontece em tag `v<versão>`. Variáveis e detalhes: `docs/publishing.md` da Foundation, seção "Pipelines".
+- CI: `.github/workflows/ci.yml` (GitHub Actions) roda a qualidade do pacote e a conformidade contra a Foundation publicada (checkout do `devtrack-foundation-core` na tag do peer e `npm run conformance:published`). Conformidade `failed` ou `incomplete` bloqueia a publicação, que só acontece em tag `v<versão>`. Variáveis e detalhes: `docs/publishing.md` da Foundation, seção "CI".
 
 ## Limites
 
